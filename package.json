@@ -9,6 +9,7 @@
     "ref-napi": "^3.0.3"
   },
   "devDependencies": {
+    "@types/ffi-napi": "^4.0.7",
     "@types/node": "^20.2.5",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
     "@typescript-eslint/parser": "^5.59.9",
@@ -18,7 +19,7 @@
   "pkg": {
     "scripts": "dist/*",
     "outputPath": "dist/built",
-    "assets":[
+    "assets": [
       "lib/*",
       "node_modules/ref-napi/",
       "node_modules/ffi-napi"
