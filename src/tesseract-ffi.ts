@@ -32,7 +32,6 @@ function getLeptonicaLib() {
 
 //Leptonica
 //PIX * pixRead (const char *filename)
-console.log('init leptonica')
 const libl = Library(getLeptonicaLib(), {
   pixRead: [PixPtr, ["string"]],
 })
@@ -43,7 +42,6 @@ const libl = Library(getLeptonicaLib(), {
 // char *TessBaseAPIGetUTF8Text(TessBaseAPI *handle);
 // const char *TessVersion();
 // void TessBaseAPISetImage2(TessBaseAPI *handle, struct Pix *pix);
-console.log('init tesseract')
 const libt = Library(getTesseractLib(), {
   TessBaseAPICreate: [TessBaseAPIPtr, []],
   TessBaseAPIInit3: ["int", [TessBaseAPIPtr, "string", "string"]],
