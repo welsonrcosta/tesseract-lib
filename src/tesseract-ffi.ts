@@ -1,5 +1,5 @@
-import {Library} from 'ffi-napi'
-import {types, refType, Pointer} from "ref-napi"
+import { Library } from 'ffi-napi'
+import { types, refType, Pointer } from "ref-napi"
 import path from "path"
 import os from 'os'
 
@@ -12,20 +12,26 @@ let Pix = types.void,
 
 function getTesseractLib() {
   const platform = os.platform()
+  const arch = os.arch()
   if (platform == "win32") {
-    return path.join(".","lib", "tesseract53");
+    if (arch == "x64")
+      return path.join(".", "lib", "x64", "tesseract53");
+    return path.join(".", "lib", "x86", "tesseract53");
   } else if (platform == 'darwin') {
-    return path.join(".","lib", "libtesseract.5.3.1.dylib");
+    return path.join(".", "lib", "x64", "libtesseract.5.3.1.dylib");
   }
   throw Error('unsupported platform: ' + platform)
 }
 
 function getLeptonicaLib() {
   const platform = os.platform()
+  const arch = os.arch()
   if (platform == "win32") {
-    return path.join(".","lib", "leptonica-1.84.0");
+    if (arch == "x64")
+      return path.join(".", "lib", "x64", "leptonica-1.84.0");
+    return path.join(".", "lib", "x86", "leptonica-1.84.0");
   } else if (platform == 'darwin') {
-    return path.join(".","lib", "libtesseract.5.3.1.dylib");
+    return path.join(".", "lib", "x64", "libtesseract.5.3.1.dylib");
   }
   throw Error('unsupported platform: ' + platform)
 }
