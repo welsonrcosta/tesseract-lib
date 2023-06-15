@@ -48,6 +48,7 @@ const libl = Library(getLeptonicaLib(), {
 // char *TessBaseAPIGetUTF8Text(TessBaseAPI *handle);
 // const char *TessVersion();
 // void TessBaseAPISetImage2(TessBaseAPI *handle, struct Pix *pix);
+// void TessBaseAPISetRectangle(TessBaseAPI *handle, int left, int top, int width, int height);
 const libt = Library(getTesseractLib(), {
   TessBaseAPICreate: [TessBaseAPIPtr, []],
   TessBaseAPIInit3: ["int", [TessBaseAPIPtr, "string", "string"]],
@@ -57,9 +58,23 @@ const libt = Library(getTesseractLib(), {
   TessBaseAPIGetUTF8Text: ["string", [TessBaseAPIPtr]],
   TessVersion: ["string", []],
   TessBaseAPISetImage2: ["void", [TessBaseAPIPtr, PixPtr]],
+  TessBaseAPISetRectangle: [ "void", [TessBaseAPIPtr, "int","int","int","int"]],
 });
 
+export class DetectionArea {
+  x0: number
+  y0: number
+  width: number
+  height: number
 
+  constructor(x0 : number, y0: number, width: number, height: number){
+    this.x0 = x0
+    this.y0 = y0;
+    this.width = width
+    this.height = height
+  }
+
+}
 
 export default class tesseract {
   tess: Pointer<void>
@@ -73,9 +88,12 @@ export default class tesseract {
     }
   }
 
-  detect(image: string): string | null {
+  detect(image: string, area?: DetectionArea ): string | null {
     let pix = libl.pixRead(image);
     libt.TessBaseAPISetImage2(this.tess, pix);
+    if(area){
+      libt.TessBaseAPISetRectangle(this.tess, area.x0, area.y0, area.width, area.height)
+    }
     return libt.TessBaseAPIGetUTF8Text(this.tess);
   }
 
