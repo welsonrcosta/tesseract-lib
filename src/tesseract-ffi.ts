@@ -3,6 +3,8 @@ import { types, refType, Pointer } from "ref-napi"
 import path from "path"
 import os from 'os'
 
+process.env['OMP_THREAD_LIMIT']='4'
+
 //Base API
 let TessBaseAPI = types.void,
   TessBaseAPIPtr = refType(TessBaseAPI);
@@ -56,6 +58,7 @@ const libt = Library(getTesseractLib(), {
   TessBaseAPIDelete: ["void", [TessBaseAPIPtr]],
   TessBaseAPIClear: ["void", [TessBaseAPIPtr]],
   TessBaseAPIGetUTF8Text: ["string", [TessBaseAPIPtr]],
+  TessBaseAPIClearPersistentCache: ["void",[TessBaseAPIPtr]],
   TessVersion: ["string", []],
   TessBaseAPISetImage2: ["void", [TessBaseAPIPtr, PixPtr]],
   TessBaseAPISetRectangle: [ "void", [TessBaseAPIPtr, "int","int","int","int"]],
@@ -77,11 +80,11 @@ export class DetectionArea {
 }
 
 export default class tesseract {
-  tess: Pointer<void>
+  private tess: Pointer<void> | null
 
   constructor(tessdata: string, lang: string) {
     this.tess = libt.TessBaseAPICreate();
-    var res = libt.TessBaseAPIInit3(this.tess, tessdata, lang);
+    const res = libt.TessBaseAPIInit3(this.tess, tessdata, lang);
     if (res != 0) {
       libt.TessBaseAPIDelete(this.tess);
       throw Error("Could not initialize libtesseract");
@@ -89,7 +92,10 @@ export default class tesseract {
   }
 
   detect(image: string, area?: DetectionArea ): string | null {
-    let pix = libl.pixRead(image);
+    if(!this.tess){
+      throw new Error('Tess not initialized')
+    }
+    const pix = libl.pixRead(image);
     libt.TessBaseAPISetImage2(this.tess, pix);
     if(area){
       libt.TessBaseAPISetRectangle(this.tess, area.x0, area.y0, area.width, area.height)
@@ -97,11 +103,18 @@ export default class tesseract {
     return libt.TessBaseAPIGetUTF8Text(this.tess);
   }
 
+  clear(){
+    if(!this.tess){
+      throw new Error('Tess not initialized')
+    }
+    libt.TessBaseAPIClear(this.tess)
+  }
+
   close() {
     if (this.tess != null) {
       libt.TessBaseAPIEnd(this.tess);
-      libt.TessBaseAPIClear(this.tess);
       libt.TessBaseAPIDelete(this.tess);
+      this.tess = null
     }
   }
 }
