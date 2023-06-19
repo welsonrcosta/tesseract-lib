@@ -24,10 +24,15 @@ describe("should Detect patient numbers", () => {
 
   it.each([
     ["quincy_small_118372", PMS.Quincy],
+    ["quincy_small_118372_bw", PMS.Quincy],
     ["quincy_small_12889", PMS.Quincy],
     ["quincy_small_25072", PMS.Quincy],
+    ["quincy_small_25072_bw", PMS.Quincy],
+    ["quincy_small_25072_upscale", PMS.Quincy],
     ["quincy_small_red_131665", PMS.Quincy],
+    ["quincy_small_red_131665_bw", PMS.Quincy],
     ["quincy_big_609239", PMS.Quincy],
+    ["quincy_big_609239_bw", PMS.Quincy],
     ["quincy_high_id_1027330", PMS.Quincy],
     ["quincy_big_alt_background_color_1249558", PMS.Quincy],
     ["quincy_bigger_11390", PMS.Quincy],
