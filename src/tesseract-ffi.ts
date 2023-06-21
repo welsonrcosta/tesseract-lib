@@ -6,11 +6,12 @@ import os from 'os'
 process.env['OMP_THREAD_LIMIT']='4'
 
 //Base API
-let TessBaseAPI = types.void,
+const TessBaseAPI = types.void,
   TessBaseAPIPtr = refType(TessBaseAPI);
 //Picture struct
-let Pix = types.void,
-  PixPtr = refType(Pix);
+const Pix = types.void,
+  PixPtr = refType(Pix),
+  PixPtrPtr = refType(PixPtr)
 
 function getTesseractLib() {
   const platform = os.platform()
@@ -42,6 +43,7 @@ function getLeptonicaLib() {
 //PIX * pixRead (const char *filename)
 const libl = Library(getLeptonicaLib(), {
   pixRead: [PixPtr, ["string"]],
+  pixDestroy: ["void", [PixPtrPtr]]
 })
 
 // TessBaseAPI* TessBaseAPICreate();
@@ -100,7 +102,10 @@ export default class tesseract {
     if(area){
       libt.TessBaseAPISetRectangle(this.tess, area.x0, area.y0, area.width, area.height)
     }
-    return libt.TessBaseAPIGetUTF8Text(this.tess);
+    const text =libt.TessBaseAPIGetUTF8Text(this.tess);
+    libt.TessBaseAPIClear(this.tess)
+    libl.pixDestroy(pix.ref())
+    return text
   }
 
   clear(){
